@@ -1,3 +1,6 @@
+from matplotlib import pyplot as plt
+import numpy as np
+
 def inputInt(min, max, msg="Veuillez entrer une valeur"):
     """
     Demande à l'utilisateur de rentrer un entier entre min et max
@@ -32,3 +35,20 @@ def inputInt(min, max, msg="Veuillez entrer une valeur"):
             reponseOk = True
 
     return rep
+
+def plot(donnees, a, b):
+    """
+    Permet de tracer un graphique
+    :param donnees: Les données à tracer
+    :param a: Le coefficient a
+    :param b: Le coefficient b
+    """
+    x = []
+    y = []
+    for i in donnees:
+        x.append(i[0])
+        y.append(i[1])
+
+    plt.plot(x, y, "ro")
+    plt.plot(x, a * np.array(x) + b)
+    plt.show()
