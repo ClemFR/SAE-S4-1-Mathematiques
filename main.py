@@ -1,5 +1,5 @@
 import util
-from matplotlib import pyplot as plt
+import math
 
 def ouvrirFichier(file: str):
     """
@@ -54,6 +54,68 @@ def resolv_analytique(donnees):
     return a, b
 
 
+def axb(a, b, x):
+    return a*x+b
+
+
+def resolv_desc_grad(donnees, a=1, b=1, err=0.0001, max_iter=1000000, alpha=0.00001):
+    # Calcul des valeurs pour les gradients
+    xi2 = 0
+    xi = 0
+    xi_yi = 0
+    yi = 0
+
+    for x, y in donnees:
+        xi2 += x ** 2
+        xi += x
+        yi += y
+        xi_yi += x * y
+
+    fin = False
+    i = 0
+    while not fin:
+        cout = calcul_cout(donnees, a, b)
+        if cout <= err:
+            fin = True
+            print("Cout : " + str(cout))
+        else:
+            # Calcul du vecteur gradient
+            grad_a = deriver_a(xi2, xi, xi_yi, a, b)
+            grad_b = deriver_b(xi, yi, len(donnees), a, b)
+
+            if abs(grad_a) < err and abs(grad_b) < err:
+                fin = True
+                print("FINITO PIPO. Cout : " + str(cout))
+
+            a -= grad_a * alpha
+            b -= grad_b * alpha
+            # print("[" + str(i) + "] a = " + str(a) + " b = " + str(b) + " cout = " + str(cout) + " vecteur gradient = (" + str(grad_a) + ", " + str(grad_b) + ") alpha = " + str(alpha) + " longueur vect = " + str(math.sqrt(grad_a ** 2 + grad_b ** 2)))
+            i += 1
+
+        if i >= max_iter:
+            fin = True
+            print("Nombre d'itérations maximum atteint !")
+
+    return a, b
+
+
+def deriver_a(xi2, xi, xi_yi, a, b):
+    return 2 * (xi2 * a + xi * b - xi_yi)
+
+
+def deriver_b(xi, yi, n, a, b):
+    return 2 * (a * xi + b * n - yi)
+
+
+def calcul_cout(donnees, a, b):
+    sum = 0
+    for x, y in donnees:
+        sum += (y - axb(a, b, x)) ** 2
+
+    return sum
+
+
+
 if __name__ == "__main__":
     donnees = None
     try:
@@ -68,4 +130,11 @@ if __name__ == "__main__":
         print("Votre choix est : " + str(choix))
         if choix == 1:
             (a,b,) = resolv_analytique(donnees)
-            util.plot(donnees, a, b)
+            print("a = " + str(a) + " b = " + str(b))
+            util.plot(donnees, [(a, b)])
+        elif choix == 2:
+            (a,b,) = resolv_desc_grad(donnees)
+            print("a = " + str(a) + " b = " + str(b))
+            c,d = resolv_analytique(donnees)
+            util.plot(donnees, [(c, d, "green"), (a, b, "red")])
+

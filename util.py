@@ -36,7 +36,7 @@ def inputInt(min, max, msg="Veuillez entrer une valeur"):
 
     return rep
 
-def plot(donnees, a, b):
+def plot(donnees, courbes):
     """
     Permet de tracer un graphique
     :param donnees: Les données à tracer
@@ -50,5 +50,6 @@ def plot(donnees, a, b):
         y.append(i[1])
 
     plt.plot(x, y, "ro")
-    plt.plot(x, a * np.array(x) + b)
+    for courbe in courbes:
+        plt.plot(x, courbe[0] * np.array(x) + courbe[1], color=courbe[2])
     plt.show()
